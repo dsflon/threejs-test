@@ -39,18 +39,23 @@
 
 			function init() {
 
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
 				camera.position.z = 50;
 
-                controls = new THREE.OrbitControls( camera );
+                controls = new THREE.OrbitControls( camera, renderer.domElement );
                 controls.target.set( 0, 0, 0 );
                 controls.update();
 
-				// scene
+				container.appendChild( renderer.domElement );
 
+				// scene
 				scene = new THREE.Scene();
 
 				// var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
@@ -126,15 +131,7 @@
 
 				//
 
-				renderer = new THREE.WebGLRenderer();
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
-
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
-				//
-
 				window.addEventListener( 'resize', onWindowResize, false );
 
 			}
