@@ -96,7 +96,7 @@
 
 				var textureLoader = new THREE.TextureLoader( manager );
 
-				var texture = textureLoader.load( '/3d-model/obj/Curry5Yellow_u1_v1.png' );
+				var texture = textureLoader.load( './obj/Curry5Yellow_u1_v1.png' );
 
 				// model
 
@@ -115,7 +115,7 @@
 
 				var loader = new THREE.OBJLoader( manager );
 
-				loader.load( '/3d-model/obj/Curry5Yellow.obj', function ( obj ) {
+				loader.load( './obj/Curry5Yellow.obj', function ( obj ) {
 
 					object = obj;
 
