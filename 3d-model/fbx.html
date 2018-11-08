@@ -2,9 +2,9 @@
 
 <head>
 	<title>three.js webgl - OBJLoader + MTLLoader</title>
-    <meta name="robots" content="noindex,nofollow">
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="reset.css">
 	<style>
 		body {
@@ -26,18 +26,23 @@
 
 	<script src="https://cdn.rawgit.com/mrdoob/three.js/r98/examples/js/controls/OrbitControls.js"></script>
 
-	<script src="https://cdn.rawgit.com/mrdoob/three.js/r98/examples/js/WebGL.js"></script>
+	<!-- <script src="https://cdn.rawgit.com/mrdoob/three.js/r98/examples/js/WebGL.js"></script> -->
 	<script src="https://cdn.rawgit.com/mrdoob/three.js/r98/examples/js/libs/stats.min.js"></script>
 
 	<script>
-	if ( WEBGL.isWebGLAvailable() === false ) {
-		document.body.appendChild( WEBGL.getWebGLErrorMessage() );
-	}
+	// if ( WEBGL.isWebGLAvailable() === false ) {
+	// 	document.body.appendChild( WEBGL.getWebGLErrorMessage() );
+	// }
 
 	var container, stats, controls;
 	var camera, scene, renderer, light;
 	var clock = new THREE.Clock();
 	var mixers = [];
+
+	// var fbx = "./fbx/Samba Dancing.fbx";
+	// var fbx = "./fbx/Curry5Yellow.fbx";
+	var fbx = "./fbx/Curry5_SkinMesh2.fbx";
+	// var fbx = "./fbx/Jumping.fbx";
 
 	init();
 	animate();
@@ -50,14 +55,19 @@
 		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
 		camera.position.set( 100, 200, 300 );
 
-		controls = new THREE.OrbitControls( camera );
+		renderer = new THREE.WebGLRenderer( { antialias: true } );
+		renderer.setPixelRatio( window.devicePixelRatio );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.shadowMap.enabled = true;
+		container.appendChild( renderer.domElement );
+
+		controls = new THREE.OrbitControls( camera, renderer.domElement );
 		controls.target.set( 0, 100, 0 );
 		controls.update();
 
 		scene = new THREE.Scene();
 		// scene.background = new THREE.Color( 0xa0a0a0 );
 		// scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
-
 
 		light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
 		light.position.set( 0, 200, 0 );
@@ -86,8 +96,24 @@
 		scene.add( grid );
 
 		// model
+		function onProgress( xhr ) {
+
+			if ( xhr.lengthComputable ) {
+
+				var percentComplete = xhr.loaded / xhr.total * 100;
+				console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
+
+			}
+
+		}
+
+		function onError(e) {
+			console.error(e);
+		}
+
 		var loader = new THREE.FBXLoader();
-		loader.load( './fbx/Curry5Yellow.fbx', function ( object ) {
+		loader.load( fbx, function ( object ) {
+			console.log(object);
 			object.mixer = new THREE.AnimationMixer( object );
 			mixers.push( object.mixer );
 			var action = object.mixer.clipAction( object.animations[ 0 ] );
@@ -99,18 +125,13 @@
 				}
 			} );
 			scene.add( object );
-		} );
+		}, onProgress, onError );
 
 		// // axis ------------------------------
 		var axis = new THREE.AxesHelper(1000);
 		axis.position.set(0,0,0);
 		scene.add(axis);
 
-		renderer = new THREE.WebGLRenderer( { antialias: true } );
-		renderer.setPixelRatio( window.devicePixelRatio );
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		renderer.shadowMap.enabled = true;
-		container.appendChild( renderer.domElement );
 		window.addEventListener( 'resize', onWindowResize, false );
 
 		// stats
